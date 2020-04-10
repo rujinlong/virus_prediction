@@ -1,0 +1,8 @@
+/
+!d01_data_raw
+!bin
+!test.sh
+!main.nf
+!nextflow.config
+!preprocess.sh
+!estimated_run_time.tsv

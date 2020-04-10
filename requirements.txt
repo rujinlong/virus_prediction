@@ -1,0 +1,15 @@
+nextflow
+seqkit
+bbmap
+CAT
+DeepVirFinder
+R
+python3
+pandas
+click
+biopython
+virsorter
+cd-hit
+VIBRANT
+vContact2
+Demovir
