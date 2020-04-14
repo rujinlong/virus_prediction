@@ -1,7 +1,6 @@
 #!/bin/bash
 
 PREDICTED_TAXA=$1
-VIRUSLIST=$2
 NAME2TAXAID=nf_tmp_name2taxid.tsv
 TAXAID2LINEAGE=nf_tmp_taxaid2lineage.tsv
 

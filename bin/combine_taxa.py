@@ -21,20 +21,25 @@ def read_taxa(fin, contig_id='contig_id'):
 
 
 @click.command()
-@click.option("--fvcontact", '-v', help="vc_cluster.tsv")
+@click.option("--fvcontact", '-v', default=False, help="vc_cluster.tsv")
 @click.option("--fcat", '-c', help="cat_virus.tsv")
 @click.option("--fdemovir", '-d', help="DemoVir_assignment.txt")
 @click.option("--out", '-o', help="taxa.tsv")
-def main(fvcontact, fcat, fdemovir, out):
-    vcc = read_taxa(fvcontact)
+def main(fcat, fdemovir, out, fvcontact=False):
     cat = read_taxa(fcat)
     demovir = read_taxa(fdemovir, contig_id='Sequence_ID')
     
-    vcc['taxa_priority'] = 1
     cat['taxa_priority'] = 2
     demovir['taxa_priority'] = 3
     
-    df = pd.concat([vcc, cat, demovir], axis=0).sort_values('taxa_priority').drop_duplicates('contig_id').drop(['Phylum', 'Class', 'taxa_priority'], axis=1)
+    if fvcontact:
+        vcc = read_taxa(fvcontact)
+        vcc['taxa_priority'] = 1
+        taxa_tools = [vcc, cat, demovir]
+    else:
+        taxa_tools = [cat, demovir]
+
+    df = pd.concat(taxa_tools, axis=0).sort_values('taxa_priority').drop_duplicates('contig_id').drop(['Phylum', 'Class', 'taxa_priority'], axis=1)
     df.replace('*', '', inplace=True)
     df['Species'] = df['Species'].str.replace('*', '')
     df['lowest_taxa'] = df.apply(lambda x:[i for i in x if i!='no_rank'][-1], axis=1)
