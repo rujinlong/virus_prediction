@@ -39,7 +39,9 @@ def main(virus_list, predicted_taxa, name2taxid, taxid2lineage, assembler, out):
         viral['length'] = viral.apply(lambda x:int(x['contig_id'].split('=')[3]), axis=1)
     else:
         print('assember should be spades or megahit!')
-    viral.to_csv(out, sep='\t', index=False)
+    
+    rst = viral.sort_values('Superkingdom', ascending=False).drop_duplicates('contig_id').copy()
+    rst.to_csv(out, sep='\t', index=False)
 
 if __name__ == '__main__':
     main()
