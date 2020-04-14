@@ -5,6 +5,28 @@ import click
 import re
 
 
+def get_all_classified(fin):
+    df = pd.read_csv(fin, sep='\t')
+    new_col = {
+        '# contig': 'contig_id',
+        'superkingdom': 'Superkingdom',
+        'phylum': 'Phylum',
+        'class': 'Class',
+        'order': 'Order',
+        'family': 'Family',
+        'genus': 'Genus',
+        'species': 'Species'
+    }
+    df.rename(columns=new_col, inplace=True)
+    
+    # get classified viruses
+    df_classified = df[(df.classification=='classified') & ~(df['Superkingdom'].isna())].copy()
+    df_classified.replace(regex=r'\:.*$', value='', inplace=True)
+    df_classified.fillna('noname', inplace=True)
+    df_classified.replace('not classified', value='noname', inplace=True)
+    return df_classified[['contig_id', 'Superkingdom', 'Phylum', 'Class', 'Order', 'Family', 'Genus', 'Species']]
+
+
 def get_unclassified_contigs(fin):
     """
     input:
@@ -62,7 +84,7 @@ def get_classified_virus_lineage(fin):
 
 @click.command()
 @click.option("--fin", '-i', help="sample.contig2classification_official.txt")
-@click.option("--method", '-m', help="[virus | unclassified]")
+@click.option("--method", '-m', help="[virus | unclassified | all]")
 @click.option("--out", '-o', help="out.tsv")
 def main(fin, method, out):
     """
@@ -72,6 +94,8 @@ def main(fin, method, out):
         df = get_classified_virus_lineage(fin)
     elif method == 'unclassified':
         df = get_unclassified_contigs(fin)
+    elif method == 'all':
+        df = get_all_classified(fin)
     df.to_csv(out, sep='\t', index=False)
     
 
